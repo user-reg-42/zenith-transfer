@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# ZENITH.TRANSFER v1.1 — Revolutionary Data Mobility
+# Safe, secure, green data absorption to USB-C drive
+
+SOURCE="$1"
+DEST="$2"
+
+if [ -z "$SOURCE" ] || [ -z "$DEST" ]; then
+    echo "ZENITH.TRANSFER v1.1 — Revolutionary Data Mobility"
+    echo "Usage: $0 <source_directory> <usb_drive_mount>"
+    echo "Example: $0 /warehouse/data /mnt/usb"
+    echo "Max capacity 2025: 4TB (e.g. Oyen Digital Dash Pro)"
+    exit 1
+fi
+
+if [ ! -d "$SOURCE" ]; then
+    echo "Error: Source not found: $SOURCE"
+    exit 1
+fi
+
+if [ ! -d "$DEST" ]; then
+    echo "Error: USB not mounted at $DEST"
+    echo "Mount your USB-C drive first"
+    exit 1
+fi
+
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_NAME="ZENITH_BACKUP_${TIMESTAMP}.tar.zst"
+ENCRYPTED_NAME="${BACKUP_NAME}.gpg"
+
+echo "ZENITH.TRANSFER v1.1 — Absorbing data"
+echo "Source: $SOURCE"
+echo "Destination: $DEST"
+echo "Timestamp: $TIMESTAMP"
+echo "Creating compressed archive..."
+
+# Compress with zstd (best speed/ratio)
+tar -I zstd -cf "$DEST/$BACKUP_NAME" -C "$SOURCE" .
+
+echo "Compression complete — $BACKUP_NAME created"
+
+echo "Encrypting with GPG (AES256)..."
+gpg --symmetric --cipher-algo AES256 --output "$DEST/$ENCRYPTED_NAME" "$DEST/$BACKUP_NAME"
+
+# Remove unencrypted archive
+rm "$DEST/$BACKUP_NAME"
+
+echo "Encryption complete — $ENCRYPTED_NAME ready"
+echo "Size: $(du -h "$DEST/$ENCRYPTED_NAME" | cut -f1)"
+
+echo "ZENITH.TRANSFER — Data absorbed securely"
+echo "Safe to eject drive"
+echo "Green. Secure. Revolutionary."
+echo "To restore: gpg -d $ENCRYPTED_NAME | zstd -d | tar x -C /restore/path"
