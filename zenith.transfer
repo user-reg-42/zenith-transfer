@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ZENITH.TRANSFER v1.1 — Revolutionary Data Mobility
+# ZENITH.TRANSFER v1.1 — Data Migration Script
 # Safe, secure, green data absorption to USB-C drive
 
 SOURCE="$1"
